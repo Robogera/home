@@ -1,0 +1,24 @@
+IMAPAccount int-sys
+Host imap.int-sys.ru
+Port 993
+User g.cherdakly
+PassCmd "pass int-sys/credentials"
+TLSType IMAPS
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore int-sys-remote
+Account int-sys
+
+MaildirStore int-sys-local
+Subfolders Verbatim
+Path ~/mail/int-sys/
+INBOX ~/mail/int-sys/INBOX
+
+Channel int-sys
+Far :int-sys-remote:
+Near :int-sys-local:
+Patterns INBOX Drafts Sent Trash
+SyncState *
+Create Both
+Expunge Both
+
