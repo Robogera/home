@@ -1,0 +1,9 @@
+[user]
+	email = robogera@gmail.com
+	name = Gera Cherdakly
+[core]
+	pager = cat
+[interactive]
+	diffFilter = diff
+[merge]
+	conflictStyle = zdiff3
