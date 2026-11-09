@@ -29,6 +29,9 @@
 !.config/tmux/tmux.conf
 !.config/tmux/functions/
 
+!.config/msmtp/
+!.config/msmtp/config
+
 # USER SCRIPTS
 !.local/
 !.local/bin/

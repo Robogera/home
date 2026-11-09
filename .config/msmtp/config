@@ -1,0 +1,15 @@
+defaults
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+syslog on
+
+account int-sys
+from g.cherdakly@int-sys.ru
+host smtp.int-sys.ru
+port 465
+auth plain
+tls on
+tls_starttls off
+user g.cherdakly
+passwordeval pass int-sys/credentials
+
+account default : int-sys
