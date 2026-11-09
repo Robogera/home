@@ -37,6 +37,7 @@
 
 # LAUNCHER
 !.launcher/
+!.launcher/*
 
 # GNUPG
 !.gnupg/

@@ -1,0 +1,1 @@
+DISPLAY=:3 /usr/bin/firejail --name=steam --noprofile --private=/home/gera/.isolate/steam /usr/bin/steam -forcedesktopscaling 2

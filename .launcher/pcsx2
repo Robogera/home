@@ -1,0 +1,1 @@
+/usr/bin/firejail --name=pcsx2 --noprofile --private=/home/gera/.isolate/pcsx2 /usr/bin/pcsx2-qt
