@@ -96,6 +96,15 @@
 
   (setq sentence-end-double-space nil)
 
+  (set-face-attribute 'variable-pitch nil :family 'unspecified :inherit 'default)
+
+  (setq shr-use-fonts nil)
+
+  (with-eval-after-load 'gnus-art
+    (dolist (face (face-list))
+      (when (string-match-p "^\\(gnus\\|message\\|mu4e\\|shr\\)-" (symbol-name face))
+        (set-face-attribute face nil :family 'unspecified :height 'unspecified))))
+
   ;; IDK if I even need this
   (set-charset-priority 'unicode)
   (setq locale-coding-system 'utf-8
@@ -143,8 +152,6 @@
    '("k" . meow-prev)
    '("h" . meow-left)
    '("l" . meow-right)
-   ;; '("C-j" . scroll-up)
-   ;; '("C-k" . scroll-down)
    '("<escape>" . ignore))
   (meow-leader-define-key
    ;; Use SPC (0-9) for digit arguments.
@@ -183,8 +190,6 @@
    '("b x" . kill-current-buffer)
    '("?" . meow-cheatsheet))
   (meow-normal-define-key
-   ;; '("C-j" . scroll-up)
-   ;; '("C-k" . scroll-down)
    '("0" . meow-expand-0)
    '("9" . meow-expand-9)
    '("8" . meow-expand-8)
@@ -248,6 +253,11 @@
    '(">" . indent-rigidly-right-to-tab-stop)
    '("<" . indent-rigidly-left-to-tab-stop)
    '("<escape>" . ignore))
+  (meow-thing-register 'angle
+                       '(pair ("<") (">"))
+                       '(pair ("<") (">")))
+  (add-to-list 'meow-char-thing-table '(?a . angle))
+
   (meow-global-mode 1))
 
 (use-package org-inlinetask
@@ -471,11 +481,11 @@ Show an error message and exit if no matching shell command is found"
   (meow-leader-define-key
    '("e m" . mu4e-transient-menu))
   :config
-  (setq mu4e-window-configuration
-        '((main    . current)
-          (headers . current)
-          (view    . current)
-          (compose . current)))
+  (setq mu4e-split-view 'single-window)
+  (setq mu4e-compose-switch 'window) ; (for older mu4e: (setq mu4e-compose-in-new-frame nil))
+  (add-to-list 'display-buffer-alist
+               '("\\*mu4e-.*"
+                 (display-buffer-same-window)))
 
   (setq mail-user-agent 'mu4e)
   (setq mu4e-maildir "~/mail")
