@@ -254,30 +254,8 @@
   :commands
     org-inlinetask-insert-task)
 
-;; (use-package telega
-;;   :commands telega
-;;   :ensure t
-;;   :hook
-;;   (telega-before-auth-hook .
-;;           (lambda ()
-;;              (telega--addProxy '(:server "127.0.0.1" :port 10802 :type (:@type "proxyTypeSocks5")) :enable t)))
-;;   (telega-chat-mode-hook . (lambda ()
-;;                      (setq-local show-trailing-whitespace nil)))
-;;   (telega-root-mode-hook . (lambda ()
-;;                      (setq-local show-trailing-whitespace nil))))
-
-;; (use-package eww
-;;   :commands eww
-;;   :hook
-;;   (eww-mode-hook . (lambda ()
-;;                      (setq-local show-trailing-whitespace nil))))
-
 (use-package eshell
   :commands eshell
-  ;; :hook
-  ;; (eshell-mode-hook . (lambda ()
-  ;;                       (setq-local show-trailing-whitespace nil)
-  ;;                       (display-line-numbers-mode -1)))
   :init
   (setq eshell-visual-commands '())
   (setq eshell-visual-subcommands '())
@@ -404,8 +382,6 @@
                   ("\\.\\(mp4\\|mkv\\|avi\\|mov\\|wmv\\|flv\\|mpg\\)$" "mpv"))
                 dired-guess-shell-alist-user))
 
-
-
   (defun dired-user-open ()
     "Open dired marked files in an external program according to `shell-command-guess'
 Show an error message and exit if no matching shell command is found"
@@ -435,13 +411,6 @@ Show an error message and exit if no matching shell command is found"
   :init
   ;; (setq-default base16-theme-256-color-source 'colors)
   (load-theme 'cobalt t))
-
-;; (use-package pass
-;;   :ensure t
-;;   :commands pass
-;;   :hook
-;;   (pass-mode-hook . (lambda ()
-;;                      (setq-local show-trailing-whitespace nil))))
 
 (use-package pinentry
   :ensure t
