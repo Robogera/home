@@ -1,0 +1,46 @@
+*
+!.gitignore
+
+# SSH
+!.ssh/
+!.ssh/config
+
+# CONFIGS
+!.config/
+
+!.config/dinit.d/
+!.config/dinit.d/xray
+!.config/dinit.d/ciadpi
+
+!.config/emacs/
+!.config/emacs/early-init.el
+!.config/emacs/init.el
+
+!.config/foot/
+!.config/foot/foot.ini
+
+!.config/mango/
+!.config/mango/config.conf
+
+!.config/nyxt/
+!.config/nyxt/config.lisp
+
+!.config/tmux/
+!.config/tmux/tmux.conf
+!.config/tmux/functions/
+
+# USER SCRIPTS
+!.local/
+!.local/bin/
+!.local/bin/*.fish
+!.local/bin/*.sh
+
+# LAUNCHER
+!.launcher/
+
+# GNUPG
+!.gnupg/
+!.gnupg/gpg-agent.conf
+!.gnupg/common.conf
+
+
