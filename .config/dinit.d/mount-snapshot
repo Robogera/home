@@ -1,0 +1,5 @@
+type         = scripted
+command      = $HOME/.local/bin/smbmount.fish -c int-sys/credentials -u smb://master.hq.int-sys.ru/root/.zfs/snapshot
+stop-command = gio mount -u smb://master.hq.int-sys.ru/root/.zfs/snapshot
+working-dir  = $HOME
+log-type     = buffer

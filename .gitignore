@@ -8,9 +8,14 @@
 # CONFIGS
 !.config/
 
+!.config/git/
+!.config/git/config
+
 !.config/dinit.d/
 !.config/dinit.d/xray
 !.config/dinit.d/ciadpi
+!.config/dinit.d/mount-*
+
 
 !.config/emacs/
 !.config/emacs/early-init.el
@@ -31,6 +36,11 @@
 
 !.config/msmtp/
 !.config/msmtp/config
+
+!.config/swayimg
+!.config/swayimg/init.lua
+
+!.config/isyncrc
 
 # USER SCRIPTS
 !.local/
