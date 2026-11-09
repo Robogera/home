@@ -468,9 +468,15 @@ Show an error message and exit if no matching shell command is found"
   :commands mu4e-transient-menu
   :after meow
   :init
-    (meow-leader-define-key
-      '("e m" . mu4e-transient-menu))
+  (meow-leader-define-key
+   '("e m" . mu4e-transient-menu))
   :config
+  (setq mu4e-window-configuration
+        '((main    . current)
+          (headers . current)
+          (view    . current)
+          (compose . current)))
+
   (setq mail-user-agent 'mu4e)
   (setq mu4e-maildir "~/mail")
 
