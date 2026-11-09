@@ -479,20 +479,21 @@ Show an error message and exit if no matching shell command is found"
     (require 'password-store)
     (string-trim (password-store-get "routerai.ru/api-key-corporate")))
   :init
-  (setq gptel-model "deepseek/deepseek-v4-pro-0813"
-        gptel-default-mode 'org-mode
+  (setq gptel-default-mode 'org-mode
         gptel-stream t)
   :config
-  (setq gptel-backend
+  (setq gptel-display-buffer-action '(display-buffer-same-window))
+  (setq gptel-model '~google/gemini-pro-latest
+        gptel-backend
         (gptel-make-openai "RouterAI"
-                           :host "routerai.ru"
-                           :endpoint "/api/v1/chat/completions"
-                           :protocol "https"
-                           :stream t
-                           :key #'routerai-key
-                           :models '("deepseek/deepseek-v4-pro-0813")
-                           :request-params '(:plugins [(:id "web" :max_results 5)]))))
-
+          :host "routerai.ru"
+          :endpoint "/api/v1/chat/completions"
+          :protocol "https"
+          :stream t
+          :key #'routerai-key
+          :models '(~deepseek/deepseek-v4-pro-latest
+                    ~google/gemini-pro-latest)
+          :request-params '(:plugins [(:id "web" :max_results 5)]))))
 
 (use-package mu4e
   :commands mu4e-transient-menu
