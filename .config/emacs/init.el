@@ -461,8 +461,8 @@ Show an error message and exit if no matching shell command is found"
   (setq gptel-default-mode 'org-mode
         gptel-stream t)
   :config
-  (setq gptel-display-buffer-action '(display-buffer-same-window))
-  (setq gptel-model '~google/gemini-pro-latest
+  (setq gptel-display-buffer-action '(display-buffer-same-window)
+        gptel-model '~google/gemini-pro-latest
         gptel-backend
         (gptel-make-openai "RouterAI"
           :host "routerai.ru"
@@ -472,7 +472,32 @@ Show an error message and exit if no matching shell command is found"
           :key #'routerai-key
           :models '(~deepseek/deepseek-v4-pro-latest
                     ~google/gemini-pro-latest)
-          :request-params '(:plugins [(:id "web" :max_results 5)]))))
+          :request-params '(:plugins [(:id "web" :max_results 5)])))
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "*** "
+        (alist-get 'org-mode gptel-response-prefix-alist) "*** AI response\n")
+  (defun my/gptel-org-fix-response-headers (beg end)
+    (when (and (derived-mode-p 'org-mode) (< beg end))
+      (save-excursion
+        (let ((end-marker (copy-marker end))
+              (min-level nil)
+              (start-pos beg))
+          (goto-char beg)
+          (when (looking-at "^*** AI response")
+            (forward-line 1)
+            (setq start-pos (point)))
+          (while (re-search-forward "^\\(\\*+\\) " end-marker t)
+            (unless (org-in-src-block-p)
+              (let ((level (length (match-string 1))))
+                (setq min-level (if min-level (min min-level level) level)))))
+          (when min-level
+            (let ((shift (max (- 4 min-level) 0)))
+              (when (> shift 0)
+                (let ((starts (make-string shift ?*)))
+                  (goto-char start-pos)
+                  (while (re-search-forward "^\\(\\*+\\) " end-marker t)
+                    (unless (org-in-src-block-p)
+                      (replace-match (concat stars "\\1") t nil nil 1)))))))
+          (set-marker end-marker nil))))))
 
 (use-package mu4e
   :commands mu4e-transient-menu
