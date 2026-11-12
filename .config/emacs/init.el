@@ -648,10 +648,11 @@ Show an error message and exit if no matching shell command is found"
      "0f691b0fef27fdeffb52131f21914b6819044659c785109060dbfb72d6b38246"
      default))
  '(org-agenda-files
-   '("/home/gera/org/work/bokino.org")))
+   '("~/org/work/orgvopros.org"
+     "~/org/work/bokino.org")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-)
+ )
