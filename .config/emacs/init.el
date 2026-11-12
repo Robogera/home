@@ -260,6 +260,61 @@
 
   (meow-global-mode 1))
 
+(use-package org-clock
+  :config
+  (defun my/org-get-file-project-id (file)
+    "Get PROJECT_ID from FILE using Org's Property API, falling back to filename."
+    (with-current-buffer (find-file-noselect file)
+      (or (org-entry-get (point-min) "PROJECT_ID" t)
+          (file-name-base file))))
+
+  (defun my/org-clocktable-leaf-entries (entries)
+    "Return only leaf entries with positive clocked time from ENTRIES."
+    (delq nil
+          (cl-mapcar
+           (pcase-lambda ((and entry `(,level ,_ ,_ ,_ ,mins . ,_))
+                          `(,next-level . ,_))
+             (and (> mins 0)
+                  (or (null next-level) (<= next-level level))
+                  entry))
+           entries
+           (append (cdr entries) '(nil)))))
+
+  (defun my/urv-format-table (table)
+    "Format all leaf entries in a single file's clocktable TABLE."
+    (pcase-let* ((`(,file ,_ ,entries) table)
+                 (proj-id (my/org-get-file-project-id file)))
+      (mapcar (pcase-lambda ( `(,_ ,headline ,_ ,_ ,mins . ,_))
+                (format "%.1f %s %s" (/ (float mins) 60.0) proj-id headline))
+              (my/org-clocktable-leaf-entries entries))))
+
+  (defun my/urv-clocktable-formatter (ipos tables _params)
+    "Insert URV report at IPOS by flat-mapping =my/urv-format-table' over TABLES."
+    (goto-char ipos)
+    (insert (string-join (mapcan #'my/urv-format-table tables) "\n")))
+
+  (defun my/urv-compose-report (&optional date-str)
+    "Prompt for a date, generate the URV clocktable report, and draft a mu4e email."
+    (interactive)
+    (require 'mu4e)
+    (let* ((date (or date-str (org-read-date nil nil nil "URV Report Date: ")))
+           (parsed-time (org-time-string-to-time date))
+           (subject (format-time-string "УРВ_%d.%m.%y" parsed-time))
+           (report-body
+            (with-temp-buffer
+              (org-mode)
+              (org-dblock-write:clocktable
+               (list :scope 'agenda
+                     :block date
+                     :formatter #'my/urv-clocktable-formatter))
+              (string-trim (buffer-string)))))
+      (if (string-empty-p report-body)
+          (user-error "No clocked time found in agenda files for %s" date)
+        (mu4e-context-switch nil "int-sys")
+        (compose-mail "time@int-sys.ru" subject)
+        (message-goto-body)
+        (insert report-body "\n")))))
+
 (use-package org-inlinetask
   :commands
     org-inlinetask-insert-task)
@@ -512,7 +567,7 @@ Show an error message and exit if no matching shell command is found"
                '("\\*mu4e-.*"
                  (display-buffer-same-window)))
 
-  (setq mail-user-agent 'mu4e)
+  (setq mail-user-agent 'mu4e-user-agent)
   (setq mu4e-maildir "~/mail")
 
   (setq mu4e-get-mail-command "mbsync -a"
@@ -585,11 +640,7 @@ Show an error message and exit if no matching shell command is found"
      "0f691b0fef27fdeffb52131f21914b6819044659c785109060dbfb72d6b38246"
      default))
  '(org-agenda-files
-   '("/home/gera/.org/work/is-networking-vrn.org"
-     "/home/gera/.org/work/avo-s112.org"
-     "/home/gera/.org/work/avo-megaschool-service.org"
-     "/home/gera/.org/work/org.org"
-     "/home/gera/.org/work/school-tr-26-lan.org")))
+   '("/home/gera/org/work/bokino.org")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
