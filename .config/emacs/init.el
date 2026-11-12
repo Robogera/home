@@ -315,6 +315,14 @@
         (message-goto-body)
         (insert report-body "\n")))))
 
+(use-package ob-shell
+  :defer t
+  :commands (org-babel-execute:sh
+             org-babel-execute:bash
+             org-babel-execute:zsh
+             org-babel-execute:fish
+             org-babel-execute:dash))
+
 (use-package org-inlinetask
   :commands
     org-inlinetask-insert-task)
