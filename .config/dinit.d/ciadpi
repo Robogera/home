@@ -1,5 +1,5 @@
 type              = process
-command           = /usr/bin/ciadpi --ip=127.0.0.1 --port=10901 -r-5+se -a1 -d3 -n "google.com" -f-1 --ttl 4 -x2
+command = /usr/bin/ciadpi --ip=127.0.0.1 --port=10901 -o1 -r1+s -At,r,s --timeout=3 -s1 -d3+s -f-1 -S -n "www.iana.org" -At,r,s -d1 -r-5+se
 restart           = true
 working-dir       = $HOME
 log-type          = buffer
