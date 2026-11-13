@@ -361,6 +361,7 @@
 
 (use-package incus-tramp
   :ensure t
+  :demand t
   :after tramp
   :config
   (incus-tramp-add-method)
