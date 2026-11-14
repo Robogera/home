@@ -1,0 +1,11 @@
+HOME=/home/gera
+USER=gera
+LOGNAME=gera
+PATH=/home/gera/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin
+LANG=en_US.UTF-8
+XDG_RUNTIME_DIR=/run/user/1000
+DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+XDG_SESSION_TYPE=wayland
+XDG_CURRENT_DESKTOP=mango
+XDG_DATA_DIRS=/home/gera/.local/share:/usr/local/share:/usr/share
+LIBSEAT_BACKEND=seatd

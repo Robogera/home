@@ -1,0 +1,9 @@
+type = process
+command = /usr/bin/mango
+restart = false
+depends-on = dbus
+waits-for = pipewire
+waits-for = pipewire-pulse
+waits-for = wireplumber
+logfile = /home/gera/.local/share/dinit/mango.log
+env-file = /home/gera/.config/dinit.d/environment
