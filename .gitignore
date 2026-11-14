@@ -15,6 +15,10 @@
 !.config/dinit.d/xray
 !.config/dinit.d/ciadpi
 !.config/dinit.d/mount-*
+!.config/dinit.d/mango
+!.config/dinit.d/sockstun
+!.config/dinit.d/tunroute
+!.config/dinit.d/environment
 
 
 !.config/emacs/

@@ -1,0 +1,5 @@
+type = process
+command = sudo /usr/bin/sockstun $HOME/.config/sockstun/config.yml
+depends-on = xray
+logfile = /home/gera/.local/share/dinit/sockstun.log
+restart = true

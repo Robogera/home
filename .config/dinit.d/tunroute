@@ -1,0 +1,6 @@
+type = scripted
+command = $HOME/.local/bin/route.fish --add --dev tun0
+stop-command = $HOME/.local/bin/route.fish --del --dev tun0
+logfile = /home/gera/.local/share/dinit/tunroute.log
+depends-on = sockstun
+restart = true
