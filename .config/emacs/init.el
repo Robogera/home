@@ -138,7 +138,8 @@
 
   (setq window-combination-resize t)
 
-  (show-paren-mode t))
+  (show-paren-mode t)
+  (electric-pair-mode 1))
 
 (use-package meow
   :ensure t
@@ -259,6 +260,10 @@
   (add-to-list 'meow-char-thing-table '(?a . angle))
 
   (meow-global-mode 1))
+
+(use-package org
+  :init
+  (setq org-startup-truncated nil))
 
 (use-package org-clock
   :config
