@@ -46,6 +46,9 @@
 
 !.config/isyncrc
 
+!.config/sockstun
+!.config/sockstun/config.yml
+
 # USER SCRIPTS
 !.local/
 !.local/bin/
