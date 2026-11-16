@@ -261,9 +261,27 @@
 
   (meow-global-mode 1))
 
+(use-package pdf-tools
+  :ensure t
+  :magic ("%PDF" . pdf-view-mode)
+  :hook (pdf-view-mode-hook . (lambda ()
+                                ;; Your global `scroll-margin' of 10 will break
+                                ;; image scrolling in pdf-view-mode; reset it locally:
+                                (setq-local scroll-margin 0)))
+  :config
+  (setq pdf-view-use-scaling t
+        pdf-view-display-size 'fit-page
+        pdf-view-continuous nil)
+  ;; Compiles epdfinfo if needed without prompting, and registers modes
+  (pdf-tools-install :no-query))
+
 (use-package org
   :init
   (setq org-startup-truncated nil))
+
+(use-package org-pdftools
+  :ensure t
+  :hook (org-mode-hook . org-pdftools-setup-link))
 
 (use-package org-clock
   :config
@@ -327,6 +345,29 @@
              org-babel-execute:zsh
              org-babel-execute:fish
              org-babel-execute:dash))
+
+(use-package ob-elixir
+  :ensure t
+  :commands org-babel-execute:elixir)
+
+(use-package ess
+  :ensure t
+  :commands (julia run-ess-julia)
+  :init
+  (meow-leader-define-key
+   '("o j" . run-ess-julia)))
+
+(use-package org-contrib
+  :ensure t
+  :init
+  ;; Register autoloads directly once org-contrib is on load-path
+  (autoload #'org-babel-execute:julia "ob-julia" nil t)
+  (autoload #'org-babel-initiate-session:julia "ob-julia" nil t)
+  (autoload #'org-babel-prep-session:julia "ob-julia")
+  (autoload #'org-babel-julia-initiate-session "ob-julia")
+  :config
+  (with-eval-after-load 'ob-julia
+    (require 'ess-julia)))
 
 (use-package org-inlinetask
   :commands
@@ -542,8 +583,9 @@ Show an error message and exit if no matching shell command is found"
           :models '(~deepseek/deepseek-v4-pro-latest
                     ~google/gemini-pro-latest)
           :request-params '(:plugins [(:id "web" :max_results 5)])))
-  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "*** "
-        (alist-get 'org-mode gptel-response-prefix-alist) "*** AI response\n")
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "** "
+        (alist-get 'org-mode gptel-response-prefix-alist) "** AI response\n"
+        (alist-get 'default gptel-directives) "You are an AI assistant living inside Emacs. Be very concise and straight to the point in your responses. Don't try to have a conversation or ever respond with a question. Always format responses in Markdown, even if you see org-mode syntax in conversation history. You responses are being converted to org-mode by a postprocessor.")
   (defun my/gptel-org-fix-response-headers (beg end)
     (when (and (derived-mode-p 'org-mode) (< beg end))
       (save-excursion
@@ -551,7 +593,7 @@ Show an error message and exit if no matching shell command is found"
               (min-level nil)
               (start-pos beg))
           (goto-char beg)
-          (when (looking-at "^*** AI response")
+          (when (looking-at "^** AI response")
             (forward-line 1)
             (setq start-pos (point)))
           (while (re-search-forward "^\\(\\*+\\) " end-marker t)
@@ -559,7 +601,7 @@ Show an error message and exit if no matching shell command is found"
               (let ((level (length (match-string 1))))
                 (setq min-level (if min-level (min min-level level) level)))))
           (when min-level
-            (let ((shift (max (- 4 min-level) 0)))
+            (let ((shift (max (- 3 min-level) 0)))
               (when (> shift 0)
                 (let ((starts (make-string shift ?*)))
                   (goto-char start-pos)
