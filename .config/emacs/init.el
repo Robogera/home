@@ -577,6 +577,11 @@ Show an error message and exit if no matching shell command is found"
   (setq gptel-default-mode 'org-mode
         gptel-stream t)
   :config
+  (set-face-attribute 'gptel-context-highlight-face nil
+                      :background 'unspecified
+                      :foreground 'unspecified
+                      :inherit nil
+                      :extend nil)
   (setq gptel-display-buffer-action '(display-buffer-same-window)
         gptel-model '~google/gemini-pro-latest
         gptel-backend
@@ -615,42 +620,6 @@ Show an error message and exit if no matching shell command is found"
                     (unless (org-in-src-block-p)
                       (replace-match (concat stars "\\1") t nil nil 1)))))))
           (set-marker end-marker nil))))))
-
-(use-package gptel-context
-  :commands my/gptel-context-remove
-  :after meow
-  :init
-  (meow-leader-define-key
-   '("l a" . gptel-add)
-   '("l d" . my/gptel-context-remove)
-  :config
-  (set-face-attribute 'gptel-context-highlight-face nil
-                      :background 'unspecified
-                      :foreground 'unspecified
-                      :inherit nil
-                      :extend nil)
-
-  (defun my/gptel-context-remove ()
-    "Remove selected buffers/files from `gptel' context via minibuffer."
-    (interactive)
-    (let* ((raw-ctx (or (bound-and-true-p gptel-context)
-                        (bound-and-true-p gptel-context--alist)))
-           (candidates
-            (delq nil
-                  (mapcar (lambda (entry)
-                            (let ((item (if (consp entry) (car entry) entry)))
-                              (cond
-                               ((buffer-live-p item) (cons (buffer-name item) item))
-                               ((stringp item) (cons item item)))))
-                          raw-ctx))))
-      (unless candidates
-        (user-error "No active gptel context"))
-      (dolist (name (completing-read-multiple
-                     "Remove context (comma-separated): " candidates nil t))
-        (when-let* ((target (cdr (assoc name candidates))))
-          (gptel-context-remove target)))
-      (force-mode-line-update t)))))
-
 
 (use-package mu4e
   :commands mu4e-transient-menu
