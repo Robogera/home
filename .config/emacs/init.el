@@ -354,7 +354,34 @@
 
 (use-package ob-elixir
   :ensure t
-  :commands org-babel-execute:elixir)
+  :commands org-babel-execute:elixir
+  :config
+  (setq ob-elixir-eoe "ob_elixir_eoe")
+
+  (defun ob-elixir-eval (session body)
+    (let ((result (ob-elixir-eval-in-repl session body)))
+      (replace-regexp-in-string
+       "^\\(import_file([^)]+)\\)+\n" ""
+       (replace-regexp-in-string
+        "\r" ""
+        (replace-regexp-in-string
+         "\n\\(\\(iex\\|[.]+\\)\\(([^@]+@[^)]+)[0-9]+\\|([0-9]+)\\)> \\)+" ""
+         (replace-regexp-in-string
+          "\e\\[[0-9;]*[A-Za-z]" ""
+          (replace-regexp-in-string
+           (concat "\"" (regexp-quote ob-elixir-eoe) "\"\r?\n?") ""
+           result)))))))
+
+  (defun ob-elixir-eval-in-repl (session body)
+    (let ((name (format "*elixir-%s*" session)))
+      (setq ob-elixir-process-output "")
+      (process-send-string name (format "%s\n" body))
+      (accept-process-output (get-process name) nil nil 1)
+      (process-send-string name "\"ob_elixir_\" <> \"eoe\"\n")
+      (ob-elixir-wait)
+      (replace-regexp-in-string
+       "\"ob_elixir_\" <> \"eoe\"\r?\n?" ""
+       ob-elixir-process-output))))
 
 (use-package ess
   :ensure t
@@ -530,7 +557,9 @@ Show an error message and exit if no matching shell command is found"
 (use-package eglot
   :config
   (setq eldoc-echo-area-prefer-doc-buffer t)
-  (setq eglot-ignored-server-capabilities '(:inlayHintProvider)))
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+  (add-to-list 'eglot-server-programs
+               '((elixir-ts-mode heex-ts-mode) . ("expert" "--stdio"))))
 
 (use-package color-theme-modern
   :ensure t
@@ -577,11 +606,6 @@ Show an error message and exit if no matching shell command is found"
   (setq gptel-default-mode 'org-mode
         gptel-stream t)
   :config
-  (set-face-attribute 'gptel-context-highlight-face nil
-                      :background 'unspecified
-                      :foreground 'unspecified
-                      :inherit nil
-                      :extend nil)
   (setq gptel-display-buffer-action '(display-buffer-same-window)
         gptel-model '~google/gemini-pro-latest
         gptel-backend
@@ -620,6 +644,15 @@ Show an error message and exit if no matching shell command is found"
                     (unless (org-in-src-block-p)
                       (replace-match (concat stars "\\1") t nil nil 1)))))))
           (set-marker end-marker nil))))))
+
+(use-package gptel-context
+  :ensure nil
+  :config
+    (set-face-attribute 'gptel-context-highlight-face nil
+                      :background 'unspecified
+                      :foreground 'unspecified
+                      :inherit nil
+                      :extend nil))
 
 (use-package mu4e
   :commands mu4e-transient-menu
