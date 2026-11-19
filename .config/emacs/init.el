@@ -518,7 +518,9 @@ Show an error message and exit if no matching shell command is found"
   :ensure t
   :init
   ;; (setq-default base16-theme-256-color-source 'colors)
-  (load-theme 'marquardt t))
+  ;; (load-theme 'infodoc t))
+  (load-theme 'marquardt t)
+  (set-face-attribute 'fringe nil :foreground "black" :background "bisque2"))
 
 (use-package pinentry
   :ensure t
