@@ -352,62 +352,16 @@
              org-babel-execute:fish
              org-babel-execute:dash))
 
-(use-package ob-elixir
-  :ensure t
-  :commands org-babel-execute:elixir
-  :config
-  (setq ob-elixir-eoe "ob_elixir_eoe")
-
-  (defun ob-elixir-eval (session body)
-    (let ((result (ob-elixir-eval-in-repl session body)))
-      (replace-regexp-in-string
-       "^\\(import_file([^)]+)\\)+\n" ""
-       (replace-regexp-in-string
-        "\r" ""
-        (replace-regexp-in-string
-         "\n\\(\\(iex\\|[.]+\\)\\(([^@]+@[^)]+)[0-9]+\\|([0-9]+)\\)> \\)+" ""
-         (replace-regexp-in-string
-          "\e\\[[0-9;]*[A-Za-z]" ""
-          (replace-regexp-in-string
-           (concat "\"" (regexp-quote ob-elixir-eoe) "\"\r?\n?") ""
-           result)))))))
-
-  (defun ob-elixir-eval-in-repl (session body)
-    (let ((name (format "*elixir-%s*" session)))
-      (setq ob-elixir-process-output "")
-      (process-send-string name (format "%s\n" body))
-      (accept-process-output (get-process name) nil nil 1)
-      (process-send-string name "\"ob_elixir_\" <> \"eoe\"\n")
-      (ob-elixir-wait)
-      (replace-regexp-in-string
-       "\"ob_elixir_\" <> \"eoe\"\r?\n?" ""
-       ob-elixir-process-output))))
-
-(use-package ess
-  :ensure t
-  :commands (julia run-ess-julia)
-  :init
-  (meow-leader-define-key
-   '("o j" . run-ess-julia)))
-
-(use-package org-contrib
-  :ensure t
-  :init
-  ;; Register autoloads directly once org-contrib is on load-path
-  (autoload #'org-babel-execute:julia "ob-julia" nil t)
-  (autoload #'org-babel-initiate-session:julia "ob-julia" nil t)
-  (autoload #'org-babel-prep-session:julia "ob-julia")
-  (autoload #'org-babel-julia-initiate-session "ob-julia")
-  :config
-  (with-eval-after-load 'ob-julia
-    (require 'ess-julia)))
-
 (use-package org-inlinetask
   :commands
     org-inlinetask-insert-task)
 
 (use-package eshell
   :commands eshell
+  :after meow
+  :init
+  (meow-leader-define-key
+   '("t" . eshell))
   :init
   (setq eshell-visual-commands '())
   (setq eshell-visual-subcommands '())
@@ -557,9 +511,8 @@ Show an error message and exit if no matching shell command is found"
 (use-package eglot
   :config
   (setq eldoc-echo-area-prefer-doc-buffer t)
-  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
-  (add-to-list 'eglot-server-programs
-               '((elixir-ts-mode heex-ts-mode) . ("expert" "--stdio"))))
+  (setq eglot-connect-timeout 120)
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider)))
 
 (use-package color-theme-modern
   :ensure t
