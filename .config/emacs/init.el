@@ -531,13 +531,25 @@ Show an error message and exit if no matching shell command is found"
   :ensure
   (:host github :repo "dgutov/diff-hl" :main "diff-hl.el")
   :commands diff-hl-mode
+  :after color-theme-modern
   :hook
   (dired-mode-hook . diff-hl-dired-mode)
   (vc-dir-mode-hook . turn-on-diff-hl-mode)
   :init
   (meow-leader-define-key
    '("v v" . diff-hl-mode)
-   '("v s" . diff-hl-stage-dwim)))
+   '("v s" . diff-hl-stage-dwim))
+  :config
+  (setq diff-hl-show-staged-changes nil)
+  (set-face-attribute 'diff-hl-insert nil
+                      :foreground nil
+                      :background "ForestGreen")
+  (set-face-attribute 'diff-hl-change nil
+                      :foreground nil
+                      :background "DarkGoldenrod")
+  (set-face-attribute 'diff-hl-delete nil
+                      :foreground nil
+                      :background "Orchid"))
 
 (use-package mm-decode
   :config
