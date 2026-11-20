@@ -49,6 +49,9 @@
 !.config/sockstun
 !.config/sockstun/config.yml
 
+!.config/firefox
+!.config/firefox/*.css
+
 # USER SCRIPTS
 !.local/
 !.local/bin/

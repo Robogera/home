@@ -1,0 +1,11 @@
+@-moz-document url-prefix("http://"), url-prefix("https://"), url-prefix("file://") {
+  body, p, div, span, article, section {
+    font-family: "IBM Plex Serif" !important;
+    font-size: 15px !important;
+    line-height: 1.2 !important;
+  }
+
+  pre, code, kbd, samp, tt, .code, [class*="code"], [id*="code"] {
+    font-family: "IBM Plex Mono" !important;
+  }
+}

@@ -1,0 +1,7 @@
+* {
+  font-family: "IBM Plex Serif" !important;
+  font-size: 15px !important;
+}
+#TabsToolbar {
+    visibility: collapse !important;
+}
