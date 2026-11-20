@@ -74,16 +74,12 @@
                               (when buffer-file-name
                                 (setq-local show-trailing-whitespace t))))
   (add-hook 'message-mode-hook (lambda ()
-                              (when (derived-mode-p 'message-mode)
-                                (setq-local show-trailing-whitespace t))))
+                                 (when (derived-mode-p 'message-mode)
+                                   (setq-local show-trailing-whitespace t))))
 
   (setq make-backup-files nil) ; TODO: maybe move to a directory in $HOME
   (setq auto-save-default nil)
   (setq create-lockfiles nil)
-
-  ;; (global-display-line-numbers-mode 1)
-  ;; (setq display-line-numbers-type 'relative)
-  ;; (setq-default display-line-numbers-width 3)
 
   (setq scroll-conservatively 1000
     scroll-margin 10)
@@ -96,20 +92,14 @@
 
   (setq sentence-end-double-space nil)
 
-  (set-face-attribute 'variable-pitch nil :family 'unspecified :inherit 'default)
-
+  ;; NO PROPORTIONAL FONTS EVER!!!
   (setq shr-use-fonts nil)
-
-  (with-eval-after-load 'gnus-art
-    (dolist (face (face-list))
-      (when (string-match-p "^\\(gnus\\|message\\|mu4e\\|shr\\)-" (symbol-name face))
-        (set-face-attribute face nil :family 'unspecified :height 'unspecified))))
 
   ;; IDK if I even need this
   (set-charset-priority 'unicode)
   (setq locale-coding-system 'utf-8
-          coding-system-for-read 'utf-8
-          coding-system-for-write 'utf-8)
+        coding-system-for-read 'utf-8
+        coding-system-for-write 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
   (set-selection-coding-system 'utf-8)
@@ -126,7 +116,7 @@
   (setq default-input-method 'russian-computer)
 
   (setq-default bidi-display-reordering 'left-to-right
-              bidi-paragraph-direction 'left-to-right)
+                bidi-paragraph-direction 'left-to-right)
   (setq bidi-inhibit-bpa t)
 
   (setq redisplay-skip-fontification-on-input t)
@@ -143,9 +133,7 @@
   (show-paren-mode t)
 
   ;; TODO Fix weird triple quote bug in eshell
-  (electric-pair-mode 1)
-
-  )
+  (electric-pair-mode 1))
 
 (use-package meow
   :ensure t
@@ -411,16 +399,22 @@
   :config
   (setq eat-term-name "xterm-256color"))
 
+;; Lazy loads perfectly, but the colors are dependent on the theme
+;; (currently marquardt), so maybe find a way to move them to the
+;; theme block
 (use-package avy
   :ensure t
   :commands avy-goto-char-2
   :config
   (set-face-attribute 'avy-lead-face nil
-                      :background 'unspecified
-                      :foreground "Cyan")
+                      :background "NavyBlue"
+                      :foreground "bisque")
   (set-face-attribute 'avy-lead-face-0 nil
-                      :background 'unspecified
-                      :foreground "Dark cyan")
+                      :background "steelblue"
+                      :foreground "bisque")
+  (set-face-attribute 'avy-goto-char-timer-face nil
+                      :background "NavyBlue"
+                      :foreground "bisque")
   :init
   (setq avy-background t)
   (setq avy-keys (number-sequence ?a ?z))
@@ -436,8 +430,10 @@
   (defun vertico-mode-enable-once () (vertico-mode) (remove-hook 'minibuffer-mode-hook #'vertico-mode-enable-once ))
   :ensure t)
 
+;; TODO find way to lazy load this on first C-n input
 (use-package corfu
   :commands completion-at-point
+  :ensure t
   :after meow
   :bind
   (:map meow-insert-state-keymap
@@ -448,11 +444,10 @@
         ("C-y" . corfu-complete))
   :config
   (set-face-attribute 'corfu-default nil
-                      :background "#638CCC")
+                      :background "bisque3")
   (set-face-attribute 'corfu-current nil
-                      :background "#90B2E4")
-  (global-corfu-mode)
-  :ensure t)
+                      :background "bisque")
+  (global-corfu-mode))
 
 (use-package dired
   :hook
@@ -520,7 +515,30 @@ Show an error message and exit if no matching shell command is found"
   ;; (setq-default base16-theme-256-color-source 'colors)
   ;; (load-theme 'infodoc t))
   (load-theme 'marquardt t)
-  (set-face-attribute 'fringe nil :foreground "black" :background "bisque2"))
+  ;; This fixes the specifically ugly white fringes in an otherwise
+  ;; beautiful marquardt theme
+  (set-face-attribute 'fringe nil
+                      :foreground nil
+                      :background "bisque2")
+  (set-face-attribute 'variable-pitch nil
+                      :family 'unspecified
+                      :inherit 'default)
+  (set-face-attribute 'fixed-pitch nil
+                      :family 'unspecified
+                      :inherit 'default)
+  (set-face-attribute 'fixed-pitch-serif nil
+                      :family 'unspecified
+                      :inherit 'default))
+
+;; TODO This is required to kill the ugly font faces in the mu4e
+;; buffers that use gnus-art under the hood. Needs some work to make
+;; sure all ugly faces are reset.
+(use-package gnus-art
+  :after color-theme-modern
+  :config
+  (dolist (face (face-list))
+    (when (string-match-p "^\\(gnus\\|message\\|mu4e\\|shr\\)-" (symbol-name face))
+      (set-face-attribute face nil :family 'unspecified :height 'unspecified))))
 
 (use-package pinentry
   :ensure t
