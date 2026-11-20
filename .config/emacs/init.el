@@ -82,7 +82,7 @@
   (setq create-lockfiles nil)
 
   (setq scroll-conservatively 1000
-    scroll-margin 10)
+        scroll-margin 10)
 
   (if (string-equal system-name "homestation")
       (set-frame-font "IBM Plex Mono 9" nil t)
@@ -258,9 +258,8 @@
 (use-package pdf-tools
   :ensure t
   :magic ("%PDF" . pdf-view-mode)
+  ;; Not sure if it's really required
   :hook (pdf-view-mode-hook . (lambda ()
-                                ;; Your global `scroll-margin' of 10 will break
-                                ;; image scrolling in pdf-view-mode; reset it locally:
                                 (setq-local scroll-margin 0)))
   :config
   (setq pdf-view-use-scaling t
@@ -273,10 +272,12 @@
   :init
   (setq org-startup-truncated nil))
 
+;; Doesn't work
 (use-package org-pdftools
   :ensure t
   :hook (org-mode-hook . org-pdftools-setup-link))
 
+;; TODO Rework sloppy code
 (use-package org-clock
   :config
   (defun my/org-get-file-project-id (file)
@@ -342,7 +343,7 @@
 
 (use-package org-inlinetask
   :commands
-    org-inlinetask-insert-task)
+  org-inlinetask-insert-task)
 
 (use-package eshell
   :commands eshell
@@ -365,6 +366,7 @@
   (add-to-list 'eshell-modules-list 'eshell-tramp)
   (add-to-list 'eshell-modules-list 'eshell-elecslash))
 
+;; TODO revise all the supposed performance enhancements copy-pasted from the web
 (use-package tramp
   :config
   (connection-local-set-profile-variables
@@ -380,6 +382,7 @@
         remote-file-name-inhibit-auto-save-visited t)
   (setq tramp-use-connection-share nil))
 
+;; TODO fix lazy load
 (use-package incus-tramp
   :ensure t
   :demand t
@@ -387,8 +390,9 @@
   :config
   (incus-tramp-add-method)
   (tramp-set-completion-function incus-tramp-method
-      '((incus-tramp-completion-function-alist))))
+                                 '((incus-tramp-completion-function-alist))))
 
+;; Lazy loads perfectly on eshell start
 (use-package eat
   :ensure t
   :defer t
@@ -427,7 +431,8 @@
   :hook
   (minibuffer-mode-hook . vertico-mode-enable-once)
   :init
-  (defun vertico-mode-enable-once () (vertico-mode) (remove-hook 'minibuffer-mode-hook #'vertico-mode-enable-once ))
+  (defun vertico-mode-enable-once () (vertico-mode)
+         (remove-hook 'minibuffer-mode-hook #'vertico-mode-enable-once ))
   :ensure t)
 
 ;; TODO find way to lazy load this on first C-n input
@@ -456,24 +461,24 @@
   (defvar dired-dedicated-other-window nil
     "A window marked to display files opened in dired.")
 
-  (defun dired-mark-selected-window-as-chosen ()
+  (defun my/dired-mark-window ()
     "Marks currently selected window as preferred for dired"
     (interactive)
     (setq dired-dedicated-other-window (or (selected-window) dired-dedicated-other-window)))
 
-  (defun dired-find-file-chosen-window (&optional focus)
+  (defun my/dired-find-file-marked-window (&optional focus)
     "Opens a file in a remembered window or creates one if necessary. Switches focus if optional arg is not nil."
     (interactive)
     (if (not (window-valid-p dired-dedicated-other-window))
-      (setq dired-dedicated-other-window (or (window-in-direction 'below)
-                                             (window-in-direction 'right)
-                                             (next-window)
-                                             (split-window-vertically))))
+        (setq dired-dedicated-other-window (or (window-in-direction 'below)
+                                               (window-in-direction 'right)
+                                               (next-window)
+                                               (split-window-vertically))))
     (set-window-buffer dired-dedicated-other-window (find-file-noselect (dired-get-file-for-visit)))
     (if focus (select-window dired-dedicated-other-window)))
 
   (add-to-list 'display-buffer-alist
-             (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))
+               (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))
 
   (setq async-shell-command-buffer "rename-buffer")
 
@@ -484,7 +489,7 @@
                   ("\\.\\(mp4\\|mkv\\|avi\\|mov\\|wmv\\|flv\\|mpg\\)$" "mpv"))
                 dired-guess-shell-alist-user))
 
-  (defun dired-user-open ()
+  (defun my/dired-open ()
     "Open dired marked files in an external program according to `shell-command-guess'
 Show an error message and exit if no matching shell command is found"
     (interactive)
@@ -497,23 +502,22 @@ Show an error message and exit if no matching shell command is found"
         (dired-do-async-shell-command (car shell-command-list) "" files))))
 
   (meow-leader-define-key
-   '("d m" . dired-mark-selected-window-as-chosen))
+   '("d m" . my/dired-mark-window))
   (keymap-set dired-mode-map "-" 'dired-up-directory)
-  (keymap-set dired-mode-map "E" 'dired-user-open)
-  (keymap-set dired-mode-map "o" 'dired-find-file-chosen-window)
-  (keymap-set dired-mode-map "C-o" (lambda () (interactive) (dired-find-file-chosen-window t))))
+  (keymap-set dired-mode-map "E" 'my/dired-open)
+  (keymap-set dired-mode-map "o" 'my/dired-find-file-marked-window)
+  (keymap-set dired-mode-map "C-o" (lambda () (interactive) (dired-find-file-marked-window t))))
 
 (use-package eglot
   :config
   (setq eldoc-echo-area-prefer-doc-buffer t)
+  ;; Long timeout specifically for slow cold startup julia LSP
   (setq eglot-connect-timeout 120)
   (setq eglot-ignored-server-capabilities '(:inlayHintProvider)))
 
 (use-package color-theme-modern
   :ensure t
   :init
-  ;; (setq-default base16-theme-256-color-source 'colors)
-  ;; (load-theme 'infodoc t))
   (load-theme 'marquardt t)
   ;; This fixes the specifically ugly white fringes in an otherwise
   ;; beautiful marquardt theme
@@ -543,7 +547,7 @@ Show an error message and exit if no matching shell command is found"
 (use-package pinentry
   :ensure t
   :init
-  (pinentry-start))                     ; TODO lazy load
+  (pinentry-start))
 
 (use-package diff-hl-mode
   :ensure
@@ -605,7 +609,12 @@ Show an error message and exit if no matching shell command is found"
           :request-params '(:plugins [(:id "web" :max_results 5)])))
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "** "
         (alist-get 'org-mode gptel-response-prefix-alist) "** AI response\n"
-        (alist-get 'default gptel-directives) "You are an AI assistant living inside Emacs. Be very concise and straight to the point in your responses. Don't try to have a conversation or ever respond with a question. Always format responses in Markdown, even if you see org-mode syntax in conversation history. You responses are being converted to org-mode by a postprocessor.")
+        (alist-get 'default gptel-directives)
+        "You are an AI assistant living inside Emacs. Be very concise and
+straight to the point in your responses. Don't try to have a
+conversation or ever respond with a question. Always format responses in
+Markdown, even if you see org-mode syntax in conversation history. You
+responses are being converted to org-mode by a postprocessor.")
   (defun my/gptel-org-fix-response-headers (beg end)
     (when (and (derived-mode-p 'org-mode) (< beg end))
       (save-excursion
@@ -633,7 +642,7 @@ Show an error message and exit if no matching shell command is found"
 (use-package gptel-context
   :ensure nil
   :config
-    (set-face-attribute 'gptel-context-highlight-face nil
+  (set-face-attribute 'gptel-context-highlight-face nil
                       :background 'unspecified
                       :foreground 'unspecified
                       :inherit nil
@@ -647,7 +656,7 @@ Show an error message and exit if no matching shell command is found"
    '("e m" . mu4e-transient-menu))
   :config
   (setq mu4e-split-view 'single-window)
-  (setq mu4e-compose-switch 'window) ; (for older mu4e: (setq mu4e-compose-in-new-frame nil))
+  (setq mu4e-compose-switch 'window)
   (add-to-list 'display-buffer-alist
                '("\\*mu4e-.*"
                  (display-buffer-same-window)))
@@ -662,25 +671,25 @@ Show an error message and exit if no matching shell command is found"
         mu4e-update-interval nil)
 
   (setq mu4e-contexts
-      (list
-       (make-mu4e-context
-        :name "int-sys"
-        :match-func
+        (list
+         (make-mu4e-context
+          :name "int-sys"
+          :match-func
           (lambda (msg)
             (when msg
               (string-prefix-p "/int-sys" (mu4e-message-field msg :maildir))))
-        :vars '((user-mail-address            . "g.cherdakly@int-sys.ru")
-                (user-full-name               . "Герман Чердакли")
-                (mu4e-inbox-folder            . "/int-sys/INBOX")
-                (mu4e-drafts-folder           . "/int-sys/Drafts")
-                (mu4e-sent-folder             . "/int-sys/Sent")
-                (mu4e-trash-folder            . "/int-sys/Trash")
-                (smtpmail-smtp-user           . "g.cherdakly")
-                (smtpmail-smtp-server         . "smtp.int-sys.ru")
-                (smtpmail-default-smtp-server . "smtp.int-sys.ru")
-                (smtpmail-smtp-service        . 465)
-                (smtpmail-stream-type         . 'tls)
-                ))))
+          :vars '((user-mail-address            . "g.cherdakly@int-sys.ru")
+                  (user-full-name               . "Герман Чердакли")
+                  (mu4e-inbox-folder            . "/int-sys/INBOX")
+                  (mu4e-drafts-folder           . "/int-sys/Drafts")
+                  (mu4e-sent-folder             . "/int-sys/Sent")
+                  (mu4e-trash-folder            . "/int-sys/Trash")
+                  (smtpmail-smtp-user           . "g.cherdakly")
+                  (smtpmail-smtp-server         . "smtp.int-sys.ru")
+                  (smtpmail-default-smtp-server . "smtp.int-sys.ru")
+                  (smtpmail-smtp-service        . 465)
+                  (smtpmail-stream-type         . 'tls)
+                  ))))
 
   (setq mu4e-context-policy 'ask)
 
@@ -694,24 +703,20 @@ Show an error message and exit if no matching shell command is found"
    'mu4e-view-actions '("ViewBrowser" . mu4e-action-view-in-browser) t)
 
   :hook
-  ((mu4e-compose-mode . (lambda ()
-                          (set-fill-column 72)))
+  ((mu4e-compose-mode-hook . (lambda ()
+                               (set-fill-column 72)))
    (dired-mode  . turn-on-gnus-dired-mode)))
 
 
 (use-package compile-angel
   :ensure t
   :demand t
+  :hook
+  (emacs-lisp-mode-hook . compile-angel-on-save-local-mode)
   :config
-  ;; Set `compile-angel-verbose' to nil to disable compile-angel messages.
-  ;; (When set to nil, compile-angel won't show which file is being compiled.)
-  (setq compile-angel-verbose t)
-
+  (setq compile-angel-verbose nil)
   (push "/init.el" compile-angel-excluded-path-suffixes)
   (push "/early-init.el" compile-angel-excluded-path-suffixes)
-
-  (add-hook 'emacs-lisp-mode-hook #'compile-angel-on-save-local-mode)
-
   (compile-angel-on-load-mode 1))
 
 (custom-set-variables
