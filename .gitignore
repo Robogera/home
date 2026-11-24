@@ -24,6 +24,7 @@
 !.config/emacs/
 !.config/emacs/early-init.el
 !.config/emacs/init.el
+!.config/emacs/bookmarks.eld
 
 !.config/foot/
 !.config/foot/foot.ini
