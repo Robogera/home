@@ -593,6 +593,7 @@ Show an error message and exit if no matching shell command is found"
 (use-package gptel
   :ensure t
   :defer t
+  :after meow
   :preface
   (defun routerai-key ()
     "RouterAI API key"
@@ -601,6 +602,10 @@ Show an error message and exit if no matching shell command is found"
   :init
   (setq gptel-default-mode 'org-mode
         gptel-stream t)
+  (meow-leader-define-key
+   '("a a" . gptel)
+   '("a c" . gptel-add)
+   '("a r" . gptel-mode))
   :config
   (setq gptel-display-buffer-action '(display-buffer-same-window)
         gptel-model '~google/gemini-pro-latest
