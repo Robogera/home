@@ -261,21 +261,28 @@
   ;; Not sure if it's really required
   :hook (pdf-view-mode-hook . (lambda ()
                                 (setq-local scroll-margin 0)))
+  :bind
+  (:map pdf-view-mode-map
+        ("s w" . my/pdf-view-fit-window-to-page))
   :config
   (setq pdf-view-use-scaling t
         pdf-view-display-size 'fit-page
         pdf-view-continuous nil)
+  (defun my/pdf-view-fit-window-to-page ()
+    "Resize window horizontally to page width."
+    (interactive)
+    (unless (derived-mode-p 'pdf-view-mode)
+      (user-error "Buffer not in PDFView mode"))
+    (let* ((target-width (+ (car (pdf-view-image-size t)) 4))
+           (delta (window-resizable nil (- target-width (window-body-width nil t)) t nil t)))
+      (window-resize nil delta t nil t)
+      (window-preserve-size nil t t)))
   ;; Compiles epdfinfo if needed without prompting, and registers modes
   (pdf-tools-install :no-query))
 
 (use-package org
   :init
   (setq org-startup-truncated nil))
-
-;; Doesn't work
-(use-package org-pdftools
-  :ensure t
-  :hook (org-mode-hook . org-pdftools-setup-link))
 
 ;; TODO Rework sloppy code
 (use-package org-clock
