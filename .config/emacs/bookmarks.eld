@@ -2,12 +2,18 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("init.el"
-  (filename . "~/.config/emacs/init.el")
-  (front-context-string . ";; -*- lexical-b")
-  (rear-context-string)
-  (position . 1)
-  (last-modified 1795514478222330286 . 1000000000))
+(("slop"
+  (filename . "~/org/slop/")
+  (front-context-string . ".\n  drwxr-xr-x 1")
+  (rear-context-string . "94 Nov 23 16:22 ")
+  (position . 70)
+  (last-modified 27397 38113 974231 560000))
+("init.el"
+ (filename . "~/.config/emacs/init.el")
+ (front-context-string . ";; -*- lexical-b")
+ (rear-context-string)
+ (position . 1)
+ (last-modified 1795514478222330286 . 1000000000))
 (".config"
  (filename . "~/.config/")
  (front-context-string . ".\n  drwx------ 1")
