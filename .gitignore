@@ -32,6 +32,12 @@
 !.config/mango/
 !.config/mango/config.conf
 
+!.config/xdg-desktop-portal-gtk/
+!.config/xdg-desktop-portal-gtk/mango-portals.conf
+
+!.config/xdg-desktop-portal-wlr/
+!.config/xdg-desktop-portal-wlr/config
+
 !.config/nyxt/
 !.config/nyxt/config.lisp
 
