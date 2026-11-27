@@ -346,7 +346,9 @@
              org-babel-execute:bash
              org-babel-execute:zsh
              org-babel-execute:fish
-             org-babel-execute:dash))
+             org-babel-execute:dash)
+  :config
+  (setq org-babel-sh-prompt ">>> "))
 
 (use-package org-inlinetask
   :commands
